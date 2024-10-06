@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 const multer = require('multer'); // 파일 업로드를 위한 multer
 const path = require('path'); // 경로 처리
 const PostRoute = require('./src/Post/Router/PostRoute'); // 게시글 관련 라우트
+const CommentRoute = require('./src/Comment/Router/CommentRoute'); // 댓글 관련 라우트
+
 
 const app = express();
 
@@ -19,13 +21,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); 
 
 // 라우트 설정
-//app.use(PostRoute); // 게시글 관련 라우트를 사용
 app.use(PostRoute);
-
-// // 기본 헬스 체크 엔드포인트
-// app.get('/', (req, res) => {
-//     res.send('API is running...');
-// });
+app.use(CommentRoute);
 
 // 서버 실행
 const PORT = process.env.PORT || 3001;
