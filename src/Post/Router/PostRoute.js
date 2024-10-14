@@ -29,4 +29,7 @@ router.post('/api/posts/:postId/verify-password',PostController.IsVerifyPassword
 //게시글 공개여부
 router.get('/api/posts/:postId/is-public',PostController.IsPostPublic);
 
+// 이미지 업로드 라우트
+router.post('/api/image', PostController.uploadImage)
+
 module.exports = router; 

@@ -2,14 +2,61 @@
 const Post = require('../Model/PostModel');
 const PostService = require('../Service/PostService');
 
-// 게시글 등록
-exports.CreatePost = async (req, res) => {
-    try {
-        const { groupId } = req.params;
-        const {nickname, title, image ,content, tags, location, memoryMoment, isPostPublic, postPassword} = req.body;
-            
-        const postData = { ...req.body, groupId}
-        
+
+//###
+const multer = require('multer');
+const path = require('path');
+
+// 이미지 저장 설정
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/'); // 이미지 저장 경로
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname)); // 파일 이름 설정
+    }
+});
+
+const upload = multer({ storage: storage });
+
+// 이미지 업로드 API 수정
+exports.uploadImage = [
+    upload.single('image'), // 미들웨어로 multer 설정 추가
+    (req, res) => {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+        const imageUrl = `/uploads/${req.file.filename}`; // 이미지 URL 생성
+        return res.status(201).json({ imageUrl }); // 이미지 URL 응답
+    }
+];
+
+
+
+
+// 이미지 및 게시글 동시 업로드 처리
+exports.CreatePost = [
+    upload.single('image'), // 이미지 업로드 미들웨어 추가
+    async (req, res) => {
+        try {
+            const { groupId } = req.params;
+            const { nickname, title, content, tags, location, memoryMoment, isPostPublic, postPassword } = req.body;
+          
+            let imageUrl = null;
+
+            // 이미지 파일이 있는 경우 URL 생성
+            if (req.file) {
+                imageUrl = `/uploads/${req.file.filename}`;
+            }
+
+            const postData = { 
+                ...req.body, 
+                groupId, 
+                image: imageUrl // 이미지 URL을 게시글 데이터에 포함
+            };
+
+        // const postData = { ...req.body, groupId}
+
         // 현재 최대 postId 조회
         const lastPost = await PostService.getLastPostId();
         postData.postId = lastPost ? lastPost.postId + 1 : 1; // 마지막 postId가 있으면 +1, 없으면 1
@@ -20,7 +67,8 @@ exports.CreatePost = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: 'Server error', error }); // 서버 오류 응답
     }
-};
+}
+];
 
 // 게시글 수정
 exports.UpdatePost = async (req, res) => {

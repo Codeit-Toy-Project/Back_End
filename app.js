@@ -20,6 +20,18 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // 정적 파일 제공
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); 
 
+
+// 정적 파일 제공 경로 설정
+//app.use('/uploads', express.static('uploads')); // 업로드된 파일을 제공하는 경로
+
+
+
+app.listen(3000, () => {
+    console.log('Server is running on port 3000');
+});
+
+
+
 // 라우트 설정
 app.use(PostRoute);
 app.use(CommentRoute);

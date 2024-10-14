@@ -18,8 +18,8 @@ const postSchema = new mongoose.Schema({
     },
     
     image: {
-        type: String, //이미지 경로 저장, 파일이 아니라 경로
-        required: true
+        type: String //이미지 경로 저장, 파일이 아니라 경로
+        //required: true
     },
 
     content: {

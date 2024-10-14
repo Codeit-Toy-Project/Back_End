@@ -32,7 +32,7 @@ exports.createComment = async (req, res) => {
 // 2. 댓글 목록 조회
 exports.getComments = async (req, res) => {
   const { postId } = req.params;
- console.log(postId);
+  console.log(postId);
 
   try {
     const comments = await Comment.find({ postId: postId })
